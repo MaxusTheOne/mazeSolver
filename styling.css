@@ -1,0 +1,75 @@
+body {
+    background-color: #172c11;
+}
+
+.maze-container {
+    display: grid;
+    grid-template-rows: repeat(4, 1fr);
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0px;
+    width: 156px; /* 4 cells * 20px + 3 gaps * 2px */
+    height: 156px; /* 4 cells * 20px + 3 gaps * 2px */
+}
+
+/* Styling for each cell in the maze */
+.cell {
+    width: 40px;
+    height: 40px;
+    border: 2px solid #117a44;
+    box-sizing: border-box;
+}
+
+
+/* Styling for the path in the maze */
+.visited {
+    background-color: #236f75;
+}
+
+/* Styling for the start point in the maze */
+.maze-start {
+    background-color: #0f0;
+}
+
+/* Styling for the end point in the maze */
+.maze-end {
+    background-color: #f00;
+}
+
+/* Styling for walls with directions */
+.south {
+    border-bottom: 2px solid #000;
+}
+
+.north {
+    border-top: 2px solid #000;
+}
+
+.east {
+    border-right: 2px solid #000;
+}
+
+.west {
+    border-left: 2px solid #000;
+}
+
+/* Styling for the button under the maze grid */
+.button-container {
+    display: flex;
+    justify-content: left;
+    margin-top: 20px;
+
+}
+
+button {
+    padding: 10px 20px;
+    background-color: #117a44;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+button:hover {
+    background-color: #0f5a33;
+}
