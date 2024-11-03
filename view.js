@@ -3,9 +3,10 @@ export function init(){
     document.getElementById("stepButton").addEventListener("click", function() {
         console.log("Step button clicked");
         controller.stepOnce()
-        // Add your logic to start the maze solver here
     });
 }
+
+let lastPath = [];
 
 export function createHtmlMaze(maze) {
     console.log("Creating Maze");
@@ -30,10 +31,30 @@ export function createHtmlMaze(maze) {
             if (cell.west) {
                 cellHtml.classList.add("west");
             }
+            if (cell.row === maze.goal.row && cell.col === maze.goal.col) {
+                cellHtml.classList.add("goal");
+            }
             mazeHtml.appendChild(cellHtml);
         }
     }
     
+}
+
+export function changePath(newList){
+    lastPath.forEach(cell => {
+        let cellHtml = document.getElementById("cell-" + cell.row + "-" + cell.col);
+        if (cellHtml) {
+            cellHtml.classList.remove("path");
+        }
+    });
+    newList.forEach(cell => {
+        let cellHtml = document.getElementById("cell-" + cell.row + "-" + cell.col);
+        if (cellHtml) {
+            cellHtml.classList.add("path");
+        }
+    });
+    lastPath = newList;
+    return lastPath;
 }
 
 export function markVisited(row, col){

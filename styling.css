@@ -19,19 +19,21 @@ body {
     box-sizing: border-box;
 }
 
-
 /* Styling for the path in the maze */
 .visited {
     background-color: #236f75;
 }
+.path {
+    background-color: #fff;
+}
 
 /* Styling for the start point in the maze */
-.maze-start {
+.start {
     background-color: #0f0;
 }
 
 /* Styling for the end point in the maze */
-.maze-end {
+.goal {
     background-color: #f00;
 }
 

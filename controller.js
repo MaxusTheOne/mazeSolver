@@ -6,8 +6,8 @@ view.createHtmlMaze(model.maze);
 
 function init(){
     console.log("controller init");
-    view.init()
     model.init()
+    view.init(model)
     goToStart()
     
 }
@@ -19,10 +19,14 @@ function goToStart(){
 }
 
 function stepOnce(){
-    const cell = model.walkOnce()
-    console.log(cell);
+    const pathList = model.walkOnce()
+    const cell = pathList[0]
+    
+
+
     
     view.markVisited(cell.row, cell.col)
+    view.changePath(pathList)
 }
 
 window.stepOnce = stepOnce;

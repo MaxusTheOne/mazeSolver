@@ -12,7 +12,7 @@ const maze = {
   "rows": 4,
   "cols": 4,
   "start": {"row": 0, "col": 0},
-  "goal": {"row": 2, "col": 3},
+  "goal": {"row": 2, "col": 1},
   "maze":
   [
     [{"row":0,"col":0,"north":true,"east":true,"west":true,"south":false},
@@ -55,32 +55,52 @@ function mazeToGrid(maze){
 
 function cellToChoices(cell){
     let choices = []
-    directions.forEach(direction =>{ if(!maze.maze[cell.row][cell.col][direction] && visitedGrid.get(cell.row + directionToRowCol[direction][0], cell.col + directionToRowCol[direction][1]) != 1 ){ choices.push(direction)}})
+    if (!cell || typeof cell.row === 'undefined' || typeof cell.col === 'undefined') {
+        console.error("Invalid cell:", cell);
+        return choices;
+    }
 
+
+    directions.forEach(direction =>{ if(!maze.maze[cell.row][cell.col][direction] && direction != fromDirection ){ choices.push(direction)}})
+    // console.log("Choices: ", choices);
+    
     return choices
 }
 
 function walkOnce() {
     const currentCell = visitedStack.peek()
-    directions.forEach(direction => {if(direction == currentCell.choices[0]){ 
-        const nextCell = visitedGrid.get(currentCell.row + directionToRowCol[direction][0], currentCell.col + directionToRowCol[direction][1])
-        if (visitedGrid.get(currentCell.row + directionToRowCol[direction][0], currentCell.col + directionToRowCol[direction][1]) == 1){
-            console.log("Already visited: ", nextCell);
-            currentCell.choices.shift()
-            walkOnce()
-        }
-        move(direction)
-    }})
+    if (currentCell.choices == undefined) currentCell.choices = cellToChoices(currentCell)
+
+    
     if (currentCell.choices.length == 0){
+        console.log("popping the stack");
         visitedStack.pop()
+        console.log("Stack after pop: ");
+        visitedStack.dump()
         walkOnce()
     } 
-    return visitedStack.peek()
+    directions.forEach(direction => {
+        if (currentCell.choices){
+        if (direction == currentCell.choices[0]) {
+            const nextCell = visitedGrid.get(currentCell.row + directionToRowCol[direction][0], currentCell.col + directionToRowCol[direction][1])
+            if (nextCell == 1) {
+                // console.log("Already visited: ", nextCell);
+                currentCell.choices.shift()
+                walkOnce()
+                return
+            }
+            move(direction)
+            return
+        }
+    }
+    })
+    
+    return visitedStack.toList()
 }
 
 function pushCellToStack(row, col){
     let cell = maze.maze[row][col]
-    let choices = cellToChoices(cell)
+    let choices = cellToChoices(cell).forEach(choice => {if (choice != fromDirection) return choice})
     visitedStack.push({row: cell.row, col: cell.col, choices: choices})
     visitedGrid.set(row, col, 1)
     return cell;
@@ -89,29 +109,54 @@ function pushCellToStack(row, col){
 function move(direction){
     const currentCell = visitedStack.peek()
     let cell;
+    // console.log("from: ", currentCell.row, currentCell.col);
+    
     
     switch (direction) {
         case "south":
             fromDirection = "north"
+            removeDirecFromTopCell("south")
+            // console.log("Attempting to move south to: ", currentCell.row + 1, currentCell.col);
             cell = pushCellToStack(currentCell.row + 1, currentCell.col)
+            
             return cell
         case "north":
             fromDirection = "south"
+            removeDirecFromTopCell("north")
+            // console.log("Attempting to move north to: ", currentCell.row - 1, currentCell.col);
             cell = pushCellToStack(currentCell.row - 1, currentCell.col)
+            
             return cell
         case "east":
             fromDirection = "west"
+            removeDirecFromTopCell("east")
+            // console.log("Attempting to move east to: ", currentCell.row, currentCell.col + 1);
             cell = pushCellToStack(currentCell.row, currentCell.col + 1)
+    
             return cell
         case "west":
             fromDirection = "east"
+            removeDirecFromTopCell("west")
+            // console.log("Attempting to move west to: ", currentCell.row, currentCell.col - 1);
             cell = pushCellToStack(currentCell.row, currentCell.col - 1)
+
             return cell
         default:
             break;
     }
 }
 
+function removeDirecFromTopCell(direction){
+    const currentCell = visitedStack.pop()
+    let newChoices = currentCell.choices.forEach(choice => {if (choice != direction) return choice})
+    currentCell.choices = newChoices
+    visitedStack.push(currentCell)
+    return currentCell
+}
+
+function checkForGoal(row, col){
+    return row == maze.goal.row && col == maze.goal.col
+}
 
 
-export {maze, goToStart, walkOnce, init};
+export {maze, goToStart, walkOnce, init}
